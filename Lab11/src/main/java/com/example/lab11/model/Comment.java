@@ -19,15 +19,17 @@ public class Comment {
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id" , nullable = false)
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "post_id")
+    @JoinColumn(name = "post_id" , nullable = false)
     private Post post;
 
     @NotBlank(message = "should not be empty")
+    @Column(nullable = false)
     private String content;
 
+    @Column(nullable = false)
     private LocalDate comment_date;
 }

@@ -1,12 +1,15 @@
 package com.example.lab11.controller;
 
 import com.example.lab11.model.Comment;
+import com.example.lab11.model.User;
 import com.example.lab11.service.CommentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Valid
 @RequiredArgsConstructor
@@ -18,7 +21,12 @@ public class CommentController {
 
     @GetMapping("/get")
     public ResponseEntity<?> getAllComments(){
-        return ResponseEntity.status(200).body(commentService.getAllComments());
+        List<Comment> comments = commentService.getAllComments();
+        if (comments.isEmpty()){
+            return ResponseEntity.status(200).body("No comments found");
+         }
+        return ResponseEntity.status(200).body(comments);
+
 
     }
 
@@ -29,7 +37,6 @@ public class CommentController {
         if (errors.hasErrors()){
             String message = errors.getFieldError().getDefaultMessage();
               return ResponseEntity.status(400).body(message);
-
 
         }
         commentService.addComment(comment);
@@ -69,23 +76,46 @@ public class CommentController {
     //EndPoint3
     @GetMapping("/count/{postId}")
     public ResponseEntity<?> countComments(@PathVariable Integer postId){
+        if (postId == null || postId <= 0){
+            return ResponseEntity.status(400).body("postId must be a positive number");
+
+        }
+
         Integer count = commentService.countComments(postId);
         return ResponseEntity.status(200).body(count);
-
     }
 
     //EndPoint4
     @GetMapping("/active-users")
     public ResponseEntity<?> getMostActiveUsers(){
-        return ResponseEntity.status(200).body(commentService.getMostActiveUsers());
 
+        List<User> users = commentService.getMostActiveUsers();
 
+        if (users.isEmpty()){
+            return ResponseEntity.status(200).body("No active users found");
+        }
+
+        return ResponseEntity.status(200).body(users);
     }
 
     //Endpoint8
     @GetMapping("/search/content")
     public ResponseEntity<?> searchComments(@RequestParam String keyword){
-        return ResponseEntity.status(200).body(commentService.searchComments(keyword));
+        if (keyword == null || keyword.isBlank()){
+            return ResponseEntity.status(400).body("keyword shouldnt be empty");
+        }
+
+        if (keyword.length() < 3){
+            return ResponseEntity.status(400).body("lenght of keyword should be 3 or more");
+        }
+        List<Comment> comments = commentService.searchComments(keyword);
+
+         if (comments.isEmpty()){
+
+             return ResponseEntity.status(200).body("No comments found ");
+        }
+
+          return ResponseEntity.status(200).body(comments);
     }
 
 

@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Valid
 @RequiredArgsConstructor
 @RestController
@@ -18,8 +20,11 @@ public class CategoryController {
 
     @GetMapping("/get")
     public ResponseEntity<?> getAllCategories(){
-        return ResponseEntity.status(200).body(categoryService.getAllCategories());
-
+        List<Category> categories = categoryService.getAllCategories();
+        if (categories.isEmpty()) {
+            return ResponseEntity.status(200).body("No categories found");
+        }
+        return ResponseEntity.status(200).body(categories);
     }
 
     @PostMapping("/add")
@@ -44,7 +49,7 @@ public class CategoryController {
         }
         boolean isUpdated = categoryService.updateCategory(id, category);
         if (!isUpdated){
-            return ResponseEntity.status(400).body("category not updated");
+            return ResponseEntity.status(400).body("category not updated - it may be linked with existed posts");
         }
 
         return ResponseEntity.status(200).body("category updated");

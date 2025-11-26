@@ -15,6 +15,8 @@ public interface CommentRepository extends JpaRepository<Comment, Integer> {
 
     Comment findCommentById(Integer id);
 
+    boolean existsByPostId(Integer postId);
+
     // EndPoint3
 
     @Query("select count(c) from Comment c where c.post.id = ?1")

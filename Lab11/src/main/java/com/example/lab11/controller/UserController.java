@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Valid
 @RequiredArgsConstructor
 @RestController
@@ -18,7 +20,11 @@ public class UserController {
 
     @GetMapping("/get")
     public ResponseEntity<?> getAllUsers(){
-       return ResponseEntity.status(200).body(userService.getAllUsers());
+        List<User> users = userService.getAllUsers();
+        if (users.isEmpty()){
+            return ResponseEntity.status(200).body("No users found");
+        }
+        return ResponseEntity.status(200).body(users);
     }
 
 
@@ -52,7 +58,7 @@ public class UserController {
     public ResponseEntity<?> deleteUser(@PathVariable Integer id){
         boolean isDeleted = userService.deleteUser(id);
         if (!isDeleted){
-            return ResponseEntity.status(400).body("user not deleted");
+            return ResponseEntity.status(400).body("user not deleted (if the user have post u cant delete him before u delete the posts)");
         }
         return ResponseEntity.status(200).body("user deleted");
     }
@@ -60,7 +66,15 @@ public class UserController {
     //endpoint7
     @GetMapping("/user/domain")
     public ResponseEntity<?> getUsersByDomain(@RequestParam String domain){
-        return ResponseEntity.status(200).body(userService.getUsersByDomain(domain));
+        if (domain == null || domain.isBlank()){
+            return ResponseEntity.status(400).body("domain shouldnt be empty");
+        }
+        if (!domain.startsWith("@")){
+
+            return ResponseEntity.status(400).body("domain should start with @");
+        }
+
+         return ResponseEntity.status(200).body(userService.getUsersByDomain(domain));
     }
 
 

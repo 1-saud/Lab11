@@ -19,18 +19,19 @@ public class Post {
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "category_id")
+    @JoinColumn(name = "category_id" ,  nullable = false)
     private Category category;
 
     @NotBlank(message = "title should not be empty")
+    @Column(nullable = false)
     private String title;
 
     @NotBlank(message = "content should not be empty")
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT" ,  nullable = false)
     private String content;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id" ,  nullable = false)
     private User user;
 
     private LocalDate publish_date;

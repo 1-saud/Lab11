@@ -1,6 +1,7 @@
 package com.example.lab11.service;
 
 import com.example.lab11.model.User;
+import com.example.lab11.repository.PostRepository;
 import com.example.lab11.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,8 @@ import java.util.List;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PostRepository postRepository;
+
 
     public List<User> getAllUsers(){
         return userRepository.findAll();
@@ -29,7 +32,6 @@ public class UserService {
     }
 
     oldUser.setEmail(user.getEmail());
-    oldUser.setId(user.getId());
     oldUser.setPassword(user.getPassword());
     oldUser.setUsername(user.getUsername());
     oldUser.setRegistrationDate(user.getRegistrationDate());
@@ -43,6 +45,10 @@ return true;
         if (user == null){
             return false;
         }
+            if (postRepository.existsByUserId(id)){
+                return false;
+            }
+
         userRepository.delete(user);
         return true;
 

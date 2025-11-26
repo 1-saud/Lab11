@@ -2,6 +2,7 @@ package com.example.lab11.service;
 
 import com.example.lab11.model.Post;
 import com.example.lab11.model.User;
+import com.example.lab11.repository.CommentRepository;
 import com.example.lab11.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import java.util.List;
 public class PostService {
 
     private final PostRepository postRepository;
+    private final CommentRepository commentRepository;
 
     public List<Post> getAllPosts(){
         return postRepository.findAll();
@@ -35,7 +37,6 @@ public class PostService {
         oldPost.setContent(post.getContent());
         oldPost.setPublish_date(post.getPublish_date());
         oldPost.setTitle(post.getTitle());
-        oldPost.setId(post.getId());
         postRepository.save(oldPost);
         return true;
     }
@@ -43,6 +44,9 @@ public class PostService {
     public boolean deletePost(Integer id ){
         Post post = postRepository.findPostById(id);
         if (post == null){
+            return false;
+        }
+        if (commentRepository.existsByPostId(id)) {
             return false;
         }
 

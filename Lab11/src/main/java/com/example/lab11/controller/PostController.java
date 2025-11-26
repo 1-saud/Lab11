@@ -11,6 +11,7 @@ import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Valid
 @RequiredArgsConstructor
@@ -22,7 +23,13 @@ public class PostController {
 
     @GetMapping("/get")
     public ResponseEntity<?> getAllPosts(){
-        return ResponseEntity.status(200).body(postService.getAllPosts());
+        List<Post> posts = postService.getPostsSortedByLength();
+
+        if (posts.isEmpty()){
+            return ResponseEntity.status(200).body("No posts found");
+        }
+
+        return ResponseEntity.status(200).body(posts);
     }
 
     @PostMapping("/add")
@@ -51,9 +58,9 @@ public class PostController {
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deletePost(@PathVariable Integer id){
-        boolean isUpdated = postService.deletePost(id);
-        if (!isUpdated){
-            return ResponseEntity.status(400).body("post not deleted");
+        boolean isDeleted = postService.deletePost(id);
+        if (!isDeleted){
+            return ResponseEntity.status(400).body("post not deleted - the post may have comments ");
         }
         return ResponseEntity.status(200).body("post deleted");
     }
@@ -63,24 +70,44 @@ public class PostController {
     //EndPoint1
     @GetMapping("/search/title")
     public ResponseEntity<?> searchPostsByWords(@RequestParam String keyword){
+        if (keyword == null){
+            return ResponseEntity.status(400).body("keyword shouldnt be empty");
+        }
+
+        if (keyword.length() < 3){
+            return ResponseEntity.status(400).body("keyword should be at least 3 characters");
+        }
 
         return ResponseEntity.status(200).body(postService.searchByWords(keyword));
-
     }
+
 
     //EndPoint2 getPostsBetweenDates
     @GetMapping("/search/date")
     public ResponseEntity<?> getPostsBetweenDates(@RequestParam LocalDate start, @RequestParam LocalDate end){
 
+        if (start == null || end == null){
+            return ResponseEntity.status(400).body("start and end dates shouldnt be null");
+        }
+
+        if (start.isAfter(end)){
+            return ResponseEntity.status(400).body("start date should be before end date");
+        }
+
         return ResponseEntity.status(200).body(postService.searchBetweenTwoDates(start, end));
     }
-
     //EndPoint5
 
     @GetMapping("/sorted/content-length")
     public ResponseEntity<?> getPostsSortedByLength(){
-        return ResponseEntity.status(200).body(postService.getPostsSortedByLength());
 
+        List<Post> posts = postService.getPostsSortedByLength();
+
+        if (posts.isEmpty()){
+            return ResponseEntity.status(200).body("No posts found");
+        }
+
+        return ResponseEntity.status(200).body(posts);
     }
 
 }

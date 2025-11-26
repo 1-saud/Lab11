@@ -24,20 +24,20 @@ public class User {
 
 
     @NotBlank
-    @Column(unique = true)
+    @Column(unique = true , nullable = false)
     private String username;
 
     @NotBlank
-    @Column
+    @Column(nullable = false)
     private String password;
 
     @NotBlank
     @Email
-    @Column(unique = true)
+    @Column(unique = true , nullable = false)
     private String email;
 
 
-    @Column //(columnDefinition = "date")
+    @Column (nullable = false)
     private LocalDate registrationDate = LocalDate.now();
 
 

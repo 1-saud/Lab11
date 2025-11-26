@@ -14,6 +14,10 @@ public interface PostRepository extends JpaRepository<Post , Integer> {
 
     Post findPostById(Integer id);
 
+    boolean existsByUserId(Integer userId);
+
+    boolean existsByCategoryId(Integer categoryId);
+
     // EndPoint1
     @Query("select p from Post p where p.title like %?1%")
     List<Post> findPostsByWords(String keyword);
